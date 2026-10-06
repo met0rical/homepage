@@ -86,12 +86,11 @@ kbd{border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:.8r
 <script>
 const KEY='launchpad:v1';
 const DEFAULTS=[
-  {ic:'💻',name:'GitHub',url:'https://github.com',desc:'Code and repositories'},
-  {ic:'📝',name:'Notes',url:'https://example.com/notes',desc:'Ideas and scratchpad'},
-  {ic:'🏠',name:'Home Server',url:'http://localhost:9000',desc:'Dashboards and containers'},
-  {ic:'🎮',name:'Side Project',url:'https://example.com/game',desc:'Something fun in progress'},
-  {ic:'📊',name:'Tracker',url:'https://example.com/tracker',desc:'Habits, goals and stats'},
-  {ic:'📚',name:'Reading List',url:'https://example.com/reading',desc:'Articles and docs to read'}
+  {ic:'🐳',name:'Portainer',url:'https://portainer.iainbrock.com',desc:'Container management'},
+  {ic:'🏠',name:'openHAB',url:'https://openhab.iainbrock.com',desc:'Home automation'},
+  {ic:'📦',name:'HomeStack',url:'https://homestack.iainbrock.com',desc:'Home services'},
+  {ic:'✉️',name:'Mail',url:'https://mail.iainbrock.com',desc:'Email'},
+  {ic:'🃏',name:'Blob',url:'https://blob.iainbrock.com',desc:'Card game scorer'}
 ];
 let projects=load(),editing=false;
 function load(){try{const r=localStorage.getItem(KEY);if(r){const p=JSON.parse(r);if(Array.isArray(p))return p}}catch(e){}return DEFAULTS.slice()}
