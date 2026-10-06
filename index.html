@@ -1,25 +1,145 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>My test page</title>
-    <link href="http://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
-    <link href="styles/style.css" rel="stylesheet" type="text/css">
-  </head>
-  <body>
-    <h1>Mozilla is cool</h1>
-    <img src="images/firefox-icon.png" alt="The Firefox logo: a flaming fox surrounding the Earth.">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Launchpad</title>
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#f6f7fb;--card:#ffffff;--text:#1b1f2a;--muted:#6b7385;--line:#e3e6ef;--accent:#4f46e5;--accent-text:#fff;
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#0f1219;--card:#181c27;--text:#e8eaf2;--muted:#8d95a9;--line:#262c3b;--accent:#818cf8;--accent-text:#0f1219}
+}
+:root[data-theme="dark"]{--bg:#0f1219;--card:#181c27;--text:#e8eaf2;--muted:#8d95a9;--line:#262c3b;--accent:#818cf8;--accent-text:#0f1219}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);min-height:100vh}
+.wrap{max-width:960px;margin:0 auto;padding:28px 20px 60px}
+header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+h1{font-size:1.9rem;margin:0 0 4px;letter-spacing:-.02em}
+.sub{color:var(--muted);margin:0}
+.clock{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.clock b{display:block;font-size:1.6rem;color:var(--text);font-weight:600}
+.bar{display:flex;gap:10px;margin:26px 0 18px;flex-wrap:wrap}
+input,button{font:inherit;color:inherit}
+input{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px;outline:none}
+input:focus{border-color:var(--accent)}
+#q{flex:1;min-width:200px}
+button{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px;cursor:pointer}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);color:var(--accent-text);border-color:var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.tile{position:relative;display:block;text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;transition:transform .12s,border-color .12s}
+.tile:hover{transform:translateY(-2px);border-color:var(--accent)}
+.tile .ic{font-size:1.7rem}
+.tile h3{margin:8px 0 4px;font-size:1.02rem}
+.tile p{margin:0;color:var(--muted);font-size:.88rem;line-height:1.35}
+.del{position:absolute;top:8px;right:8px;padding:2px 8px;border-radius:8px;display:none}
+.editing .del{display:block}
+.empty{color:var(--muted);padding:30px 0;text-align:center}
+#panel{display:none;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:18px}
+#panel.open{display:grid;grid-template-columns:70px 1fr 1.4fr;gap:10px}
+#panel .full{grid-column:1/-1;display:flex;gap:10px;justify-content:flex-end}
+@media (max-width:560px){#panel.open{grid-template-columns:1fr}}
+footer{margin-top:36px;color:var(--muted);font-size:.82rem;text-align:center}
+kbd{border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:.8rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1 id="hello">Hello</h1>
+      <p class="sub">Your launchpad for personal projects.</p>
+    </div>
+    <div class="clock"><b id="time"></b><span id="date"></span></div>
+  </header>
 
-    <p>At Mozilla, we’re a global community of</p>
+  <div class="bar">
+    <input id="q" type="search" placeholder="Search projects…  (press / to focus, Enter to open)" autocomplete="off">
+    <button id="add" class="primary">+ Add</button>
+    <button id="edit">Edit</button>
+    <button id="theme" title="Toggle theme">◐</button>
+  </div>
 
-    <ul> <!-- changed to list in the tutorial -->
-      <li>technologists</li>
-      <li>thinkers</li>
-      <li>builders</li>
-    </ul>
+  <div id="panel">
+    <input id="f-ic" placeholder="🚀" maxlength="4">
+    <input id="f-name" placeholder="Project name">
+    <input id="f-url" placeholder="https://… or local address">
+    <input id="f-desc" class="full" style="display:block;grid-column:1/-1" placeholder="Short description (optional)">
+    <div class="full"><button id="cancel">Cancel</button><button id="save" class="primary">Save</button></div>
+  </div>
 
-    <p>working together to keep the Internet alive and accessible, so people worldwide can be informed contributors and creators of the Web. We believe this act of human collaboration across an open platform is essential to individual growth and our collective future.</p>
+  <div id="grid" class="grid"></div>
+  <div id="empty" class="empty" hidden>No projects match.</div>
 
-    <p>Read the <a href="https://www.mozilla.org/en-US/about/manifesto/">Mozilla Manifesto</a> to learn even more about the values and principles that guide the pursuit of our mission.</p>
-  </body>
+  <footer>Projects are saved in this browser only. <button id="reset" style="padding:2px 8px;font-size:.8rem">Reset to examples</button></footer>
+</div>
+
+<script>
+const KEY='launchpad:v1';
+const DEFAULTS=[
+  {ic:'💻',name:'GitHub',url:'https://github.com',desc:'Code and repositories'},
+  {ic:'📝',name:'Notes',url:'https://example.com/notes',desc:'Ideas and scratchpad'},
+  {ic:'🏠',name:'Home Server',url:'http://localhost:9000',desc:'Dashboards and containers'},
+  {ic:'🎮',name:'Side Project',url:'https://example.com/game',desc:'Something fun in progress'},
+  {ic:'📊',name:'Tracker',url:'https://example.com/tracker',desc:'Habits, goals and stats'},
+  {ic:'📚',name:'Reading List',url:'https://example.com/reading',desc:'Articles and docs to read'}
+];
+let projects=load(),editing=false;
+function load(){try{const r=localStorage.getItem(KEY);if(r){const p=JSON.parse(r);if(Array.isArray(p))return p}}catch(e){}return DEFAULTS.slice()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(projects))}catch(e){}}
+const $=id=>document.getElementById(id);
+
+function render(){
+  const q=$('q').value.trim().toLowerCase(),g=$('grid');
+  g.innerHTML='';g.classList.toggle('editing',editing);
+  const list=projects.map((p,i)=>({p,i})).filter(({p})=>!q||(p.name+' '+(p.desc||'')).toLowerCase().includes(q));
+  list.forEach(({p,i})=>{
+    const a=document.createElement('a');a.className='tile';a.href=p.url;a.target='_blank';a.rel='noopener';
+    const ic=document.createElement('div');ic.className='ic';ic.textContent=p.ic||'🔗';
+    const h=document.createElement('h3');h.textContent=p.name;
+    const d=document.createElement('p');d.textContent=p.desc||'';
+    const x=document.createElement('button');x.className='del';x.textContent='✕';x.title='Remove';
+    x.onclick=e=>{e.preventDefault();projects.splice(i,1);save();render()};
+    a.append(ic,h,d,x);g.appendChild(a);
+  });
+  $('empty').hidden=list.length>0;
+}
+
+function tick(){
+  const n=new Date(),h=n.getHours();
+  $('hello').textContent=(h<12?'Good morning':h<18?'Good afternoon':'Good evening')+' 👋';
+  $('time').textContent=n.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  $('date').textContent=n.toLocaleDateString([], {weekday:'long',day:'numeric',month:'long'});
+}
+
+$('q').oninput=render;
+$('q').onkeydown=e=>{if(e.key==='Enter'){const t=document.querySelector('.tile');if(t)window.open(t.href,'_blank','noopener')}};
+document.addEventListener('keydown',e=>{if(e.key==='/'&&document.activeElement.tagName!=='INPUT'){e.preventDefault();$('q').focus()}});
+$('add').onclick=()=>{$('panel').classList.toggle('open');$('f-name').focus()};
+$('cancel').onclick=()=>$('panel').classList.remove('open');
+$('save').onclick=()=>{
+  const name=$('f-name').value.trim();let url=$('f-url').value.trim();
+  if(!name||!url)return;
+  if(!/^[a-z][a-z0-9+.-]*:/i.test(url))url='https://'+url;
+  if(/^javascript:/i.test(url))return;
+  projects.push({ic:$('f-ic').value.trim(),name,url,desc:$('f-desc').value.trim()});
+  ['f-ic','f-name','f-url','f-desc'].forEach(i=>$(i).value='');
+  $('panel').classList.remove('open');save();render();
+};
+$('edit').onclick=()=>{editing=!editing;$('edit').textContent=editing?'Done':'Edit';render()};
+$('reset').onclick=()=>{projects=DEFAULTS.slice();save();render()};
+$('theme').onclick=()=>{
+  const r=document.documentElement,dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+  r.dataset.theme=dark?'light':'dark';
+};
+tick();setInterval(tick,30000);render();
+</script>
+</body>
 </html>
